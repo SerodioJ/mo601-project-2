@@ -30,8 +30,8 @@ WORKDIR /repos
 
 RUN git clone https://github.com/riscv/riscv-gnu-toolchain \
     && cd riscv-gnu-toolchain \
-    && ./configure --prefix=/opt/riscv --with-arch=rv32iamfd --with-abi=ilp32d --with-sim=spike \
-    && make linux \
+    && ./configure --prefix=/opt/riscv --with-arch=rv32im --with-abi=ilp32 \
+    && make \
     && rm -r /repos/*
 
 ENV PATH $PATH:/opt/riscv/bin
