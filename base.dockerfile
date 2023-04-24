@@ -28,11 +28,12 @@ RUN apt-get update -y && \
 
 WORKDIR /repos
 
-RUN git clone https://github.com/riscv/riscv-gnu-toolchain
-
-WORKDIR /repos/riscv-gnu-toolchain
-
-RUN ./configure --prefix=/opt/riscv --with-arch=rv32iamfd --with-abi=ilp32d --with-sim=spike \
-    && make linux
+RUN git clone https://github.com/riscv/riscv-gnu-toolchain \
+    && cd riscv-gnu-toolchain \
+    && ./configure --prefix=/opt/riscv --with-arch=rv32iamfd --with-abi=ilp32d --with-sim=spike \
+    && make linux \
+    && rm -r /repos/*
 
 ENV PATH $PATH:/opt/riscv/bin
+
+WORKDIR /opt
