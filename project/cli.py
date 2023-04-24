@@ -14,13 +14,11 @@ def compile_to_hex(file, cmd_prefix):
     compilation = subprocess.Popen(
         [
             f"{cmd_prefix}gcc",
-            "-g",
-            "-march=rv32imafd",
-            "-std=gnu99",
-            "-mabi=ilp32d",
+            "-march=rv32im",
+            "-mabi=ilp32",
             "-Ttext=000",
             "--entry=main",
-            "-nostdlib",
+            "-nostartfiles",
             "-o",
             f"{file}.o",
             f"{file}.c",
@@ -50,8 +48,8 @@ def run_simulations(args):
     for file in tqdm(files):
         if args.compile:
             compile_to_hex(str(file)[:-2], args.executable_prefix)
-        start_addr, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
-        risc_v = RISCVSimulator(start_addr, mem_init, sp=args.stack_pointer)
+        _, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
+        risc_v = RISCVSimulator(0, mem_init, sp=args.stack_pointer)
         with open(f"{str(file)[:-2]}.log", "w") as f:
             with redirect_stdout(f):
                 risc_v.run()
@@ -79,7 +77,7 @@ if __name__ == "__main__":
         "--executable-prefix",
         help="RISC-V executable prefix",
         type=str,
-        default="riscv32-unknown-linux-gnu-",
+        default="riscv32-unknown-elf-",
     )
 
     parser.add_argument(
