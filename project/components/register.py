@@ -18,7 +18,7 @@ class x0(Register):
 
 
 class RegisterFile:
-    def __init__(self, sp):
+    def __init__(self):
         self.registers = {i: Register() for i in range(1, 32)}
         self.registers[0] = x0()
-        self.registers[2].setVal(sp)
+        self.registers[2].setVal(-1)

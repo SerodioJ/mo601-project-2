@@ -10,11 +10,11 @@ from utils.convert import hex_to_bin, bin_to_int, hex_to_int
 class RISCVSimulator:
     extend_sign = ["8", "9", "A", "B", "C", "D", "E", "F"]
 
-    def __init__(self, pc, init_memory, sp=40000):
+    def __init__(self, pc, init_memory):
         self.pc = pc
         self.next_pc = None
         self.memory = Memory(init_memory)
-        self.register_file = RegisterFile(sp=sp)
+        self.register_file = RegisterFile()
         self.decoder = Decoder()
         self.logger = Logger()
 

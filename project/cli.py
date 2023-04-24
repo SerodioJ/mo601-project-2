@@ -49,7 +49,7 @@ def run_simulations(args):
         if args.compile:
             compile_to_hex(str(file)[:-2], args.executable_prefix)
         _, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
-        risc_v = RISCVSimulator(0, mem_init, sp=args.stack_pointer)
+        risc_v = RISCVSimulator(0, mem_init)
         with open(f"{str(file)[:-2]}.log", "w") as f:
             with redirect_stdout(f):
                 risc_v.run()
@@ -85,14 +85,6 @@ if __name__ == "__main__":
         "--compile",
         help="Compile C files and perform objcopy to get simulators' input file",
         action="store_true",
-    )
-
-    parser.add_argument(
-        "-s",
-        "--stack-pointer",
-        help="Stack pointer initial address",
-        type=int,
-        default=400000,
     )
 
     args = parser.parse_args()
