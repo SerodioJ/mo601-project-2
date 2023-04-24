@@ -11,7 +11,7 @@ from simulator import RISCVSimulator
 
 
 def compile_to_hex(file, cmd_prefix):
-    compilation = subprocess.Popen(
+    subprocess.run(
         [
             f"{cmd_prefix}gcc",
             "-march=rv32im",
@@ -26,8 +26,8 @@ def compile_to_hex(file, cmd_prefix):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    compilation.communicate()
-    obj_copy = subprocess.Popen(
+
+    subprocess.run(
         [
             f"{cmd_prefix}objcopy",
             "-I",
@@ -38,7 +38,6 @@ def compile_to_hex(file, cmd_prefix):
             f"{file}.hex",
         ]
     )
-    obj_copy.communicate()
 
 
 def run_simulations(args):
