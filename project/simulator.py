@@ -8,6 +8,8 @@ from utils.convert import hex_to_bin, bin_to_int, hex_to_int
 
 
 class RISCVSimulator:
+    extend_sign = ["8", "9", "A", "B", "C", "D", "E", "F"]
+
     def __init__(self, pc, init_memory, sp=40000):
         self.pc = pc
         self.next_pc = None
@@ -56,15 +58,6 @@ class RISCVSimulator:
     def _execute(self, inst, inst_fields):
         inst_method = getattr(self, "_" + inst)
         inst_method(inst_fields)
-
-    def _memory_access(self):
-        pass
-
-    def _writeback(self):
-        pass
-
-    def _get_register_content(self, bin_index):
-        return self.register_file.registers[bin_to_int(bin_index)].getVal()
 
     # Operations
     def _LUI(self, inst_fields):
@@ -126,15 +119,19 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rd = self.register_file.registers[inst_fields["rd"]]
         addr = rs1.getVal() + inst_fields["imm"]
-        value = hex_to_int(self.memory.get_byte(addr)[0])
-        rd.setVal(value)
+        value, _ = self.memory.get_byte(addr)
+        if value[0] in self.extend_sign:
+            value = "F" * 12 + value
+        rd.setVal(hex_to_int(value))
 
     def _LH(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rd = self.register_file.registers[inst_fields["rd"]]
         addr = rs1.getVal() + inst_fields["imm"]
-        value = hex_to_int(self.memory.get_halfword(addr)[0])
-        rd.setVal(value)
+        value, _ = self.memory.get_halfword(addr)
+        if value[0] in self.extend_sign:
+            value = "F" * 8 + value
+        rd.setVal(hex_to_int(value))
 
     def _LW(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
@@ -215,7 +212,7 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         shamt = inst_fields["rs2"]
         rd = self.register_file.registers[inst_fields["rd"]]
-        rd.setVal(rs1.getVal() >> shamt)
+        rd.setVal(np.uint32(rs1.getVal()) >> shamt)
 
     def _SRAI(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
@@ -257,7 +254,7 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rs2 = self.register_file.registers[inst_fields["rs2"]]
         rd = self.register_file.registers[inst_fields["rd"]]
-        rd.setVal(rs1.getVal() >> rs2.getVal())
+        rd.setVal(np.uint32(rs1.getVal()) >> rs2.getVal())
 
     def _SRA(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
