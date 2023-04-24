@@ -25,7 +25,7 @@ class RISCVSimulator:
             self.logger.set_inst(inst)
             inst = hex_to_bin(inst)
             inst_metadata, inst_fields = self._instruction_decode(inst)
-            self.logger.set_inst_mnemonic(inst_metadata[0], inst_fields)
+            self.logger.set_inst_disassembly(inst_metadata[0], inst_fields)
             reg_id = bin_to_int(inst[12:17])
             self.logger.set_reg(
                 "rs1", reg_id, self.register_file.registers[reg_id].getVal()
