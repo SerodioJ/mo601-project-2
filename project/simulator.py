@@ -308,19 +308,22 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rs2 = self.register_file.registers[inst_fields["rs2"]]
         rd = self.register_file.registers[inst_fields["rd"]]
-        rd.setVal((np.int64(rs1.getVal()) * np.uint64(rs2.getVal())) >> 32)
+        rd.setVal((np.int64(rs1.getVal()) * np.uint64(np.uint32(rs2.getVal()))) >> 32)
 
     def _MULHU(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rs2 = self.register_file.registers[inst_fields["rs2"]]
         rd = self.register_file.registers[inst_fields["rd"]]
-        rd.setVal((np.uint64(rs1.getVal()) * np.uint64(rs2.getVal())) >> np.uint32(32))
+        rd.setVal(
+            (np.uint64(np.uint32(rs1.getVal())) * np.uint64(np.uint32(rs2.getVal())))
+            >> np.uint32(32)
+        )
 
     def _DIV(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rs2 = self.register_file.registers[inst_fields["rs2"]]
         rd = self.register_file.registers[inst_fields["rd"]]
-        rd.setVal(rs1.getVal() // rs2.getVal())
+        rd.setVal(rs1.getVal() / rs2.getVal())
 
     def _DIVU(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]

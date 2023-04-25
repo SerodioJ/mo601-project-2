@@ -48,7 +48,7 @@ class Logger:
     def log(self):
         inst = self.inst
         print(
-            f"{inst.get('pc')} [{inst.get('inst')}] {inst.get('rd_str')} {inst.get('rs1_str')} {inst.get('rs2_str')} {inst.get('inst_abi'):>8} {inst.get('inst_fields')}"
+            f"{inst.get('pc')} [{inst.get('inst')}] {inst.get('rd_str')} {inst.get('rs1_str')} {inst.get('rs2_str')} {inst.get('inst_abi'):<8} {inst.get('inst_fields')}"
         )
 
     def flush(self):

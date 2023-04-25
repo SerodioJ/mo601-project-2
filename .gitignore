@@ -7,3 +7,4 @@ __pycache__/
 !initial_debug.d
 *.r
 *.csv
+*.diff
