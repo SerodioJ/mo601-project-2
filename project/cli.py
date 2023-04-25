@@ -1,9 +1,11 @@
 import argparse
+import csv
 import subprocess
 from contextlib import redirect_stdout
 from glob import glob
 from pathlib import Path
 from tqdm import tqdm
+from time import perf_counter
 
 
 from utils import program_load
@@ -44,15 +46,21 @@ def run_simulations(args):
     files = args.files
     if args.files == None:
         files = sorted(glob(args.path))
-    for file in tqdm(files):
-        if args.compile:
-            compile_to_hex(str(file)[:-2], args.executable_prefix)
-        _, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
-        risc_v = RISCVSimulator(0, mem_init)
-        with open(f"{str(file)[:-2]}.log", "w") as f:
-            with redirect_stdout(f):
-                risc_v.run()
-
+    with open("simulations.csv", "w") as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=';')
+        csvwriter.writerow(["file", "inst_count", "load_time", "exec_time", "total_time"])
+        for file in tqdm(files):
+            if args.compile:
+                compile_to_hex(str(file)[:-2], args.executable_prefix)
+            start = perf_counter()
+            _, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
+            risc_v = RISCVSimulator(0, mem_init)
+            load = perf_counter() - start
+            with open(f"{str(file)[:-2]}.log", "w") as f:
+                with redirect_stdout(f):
+                    inst_count = risc_v.run()
+            total = perf_counter() - start
+            csvwriter.writerow([file, inst_count, load, total-load, total])
     return
 
 

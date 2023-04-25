@@ -19,6 +19,7 @@ class RISCVSimulator:
         self.logger = Logger()
 
     def run(self):
+        inst_count = 0
         while True:
             self.logger.set_pc(self.pc)
             inst = self._instruction_fetch()
@@ -36,17 +37,19 @@ class RISCVSimulator:
             )
 
             self._execute(inst_metadata[0], inst_fields)
-            # self._execute(inst_metadata, inst_fields)
+
             reg_id = bin_to_int(inst[20:25])
             self.logger.set_reg(
                 "rd", reg_id, self.register_file.registers[reg_id].getVal()
             )
 
             self.logger.log()
+            inst_count += 1
             self.pc = self.next_pc if self.next_pc != None else self.pc + 4
             if self.pc == 0:
                 break
             self.next_pc = None
+        return inst_count
 
     def _instruction_fetch(self):
         inst, _ = self.memory.get_word(self.pc)

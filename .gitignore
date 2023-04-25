@@ -2,3 +2,8 @@ __pycache__/
 *.log
 *.hex
 *.o
+*.i
+*.d
+!initial_debug.d
+*.r
+*.csv
