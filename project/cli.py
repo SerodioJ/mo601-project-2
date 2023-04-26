@@ -68,7 +68,7 @@ def run_simulations(args):
         csvwriter = csv.writer(csvfile, delimiter=';')
         csvwriter.writerow(["file", "inst_count", "load_time", "exec_time", "total_time"])
         for file in tqdm(files):
-            dump_to_hex(str(file)[:-2], args.executable_prefix, compile=args.compile or args.spike)
+            dump_to_hex(str(file)[:-2], args.toolchain_prefix, compile=args.compile or args.spike)
             start = perf_counter()
             start_addr, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
             risc_v = RISCVSimulator(start_addr, mem_init, disassembly=not args.spike)
@@ -97,9 +97,9 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-e",
-        "--executable-prefix",
-        help="RISC-V executable prefix",
+        "-t",
+        "--toolchain-prefix",
+        help="RISC-V toolchain prefix",
         type=str,
         default="riscv32-unknown-elf",
     )
