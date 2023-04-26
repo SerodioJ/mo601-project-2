@@ -39,14 +39,22 @@ def get_regs(file):
 if __name__ == "__main__":
     reg_files = sorted(glob("spike/outputs/*.r"))
     inst_files = sorted(glob("spike/outputs/*.i"))
-    with open("sp.txt", "w") as sp:
-        for reg, inst in tqdm(zip(reg_files, inst_files)):
-            log_file = f"{reg[:-2]}.log"
-            with open(inst, "r") as i, open(reg, "r") as r, open(log_file, "w") as log:
-                prev_regs = get_regs(r)
-                sp.write(f"{int(prev_regs[2], 16)}\n")
-                i.readline()
-                for line in i:
+    for reg, inst in tqdm(zip(reg_files, inst_files)):
+        log_file = f"{reg[:-2]}.log"
+        with open(inst, "r") as i, open(reg, "r") as r, open(log_file, "w") as log:
+            r.readline()
+            acc = 0
+            while acc < 31:
+                line = i.readline()
+                if line[10:12] == "0x":
+                    pc, inst_hex, reg_ids = decode_line(line)
+                    log.write(
+                        f"PC={pc} [{inst_hex}] x{reg_ids['rd']:02d}=00000000 x{reg_ids['rs1']:02d}=00000000 x{reg_ids['rs2']:02d}=00000000\n"
+                    )
+                    prev_regs = get_regs(r)
+                    acc += 1
+            for line in i:
+                if line[10:12] == "0x":
                     pc, inst_hex, reg_ids = decode_line(line)
                     cur_regs = get_regs(r)
                     log.write(
