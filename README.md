@@ -16,6 +16,11 @@ Para executar as simulações para todos os testes (\*.riscv) na pasta `test` ut
 docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 project/cli.py
 ```
 
+É possível executar o simulador sem utilizar a imagem docker, mas pode ser necessário utilizar a flag -t caso o prefixo da toolchain do RISC-V não seja `riscv32-unknown-elf`, como no exemplo abaixo
+```
+python3 project/cli.py -t riscv64-linux-gnu
+```
+
 ### Comparação de logs com o Spike Sim
 
 Execute as simulações com a flag -s, isso faz com que o código seja compilado com a flag `-static` e também remove o disassembly do log da instrução
