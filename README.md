@@ -10,8 +10,32 @@ Execute na raiz do repostório o comando abaixo para construir a imagem Docker (
 docker build -t mo601-p2-218548 .
 ```
 
-Para executar as simulações para todos os testes na pasta `test` utilize
+Para executar as simulações para todos os testes (\*.riscv) na pasta `test` utilize
 
 ```
-docker run --rm -v ./test:/simulator/test mo601-p2-218548:latest python3 cli.py -p "/simulator/test/*.c" -c
+docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 project/cli.py
+```
+
+### Comparação de logs com o Spike Sim
+
+Execute as simulações com a flag -s, isso faz com que o código seja compilado com a flag `-static` e também remove o disassembly do log da instrução
+
+```
+docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 project/cli.py -s
+```
+
+Gere os logs do spike com os arquivos compilados, para isso os scripts `generate_logs.py` e `merge_logs.py` na pasta `spike` podem ser utilizados.
+
+```
+docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 spike/generate_logs.py
+```
+
+```
+docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 spike/merge_logs.py
+```
+
+A comparação pode ser feita com o script `cmp_logs.py` na raiz do repositório.
+
+```
+docker run --rm -v ${PWD}:/simulator mo601-p2-218548:latest python3 cmp_logs.py
 ```
