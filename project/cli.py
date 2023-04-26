@@ -12,34 +12,52 @@ from utils import program_load
 from simulator import RISCVSimulator
 
 
-def compile_to_hex(file, cmd_prefix):
-    subprocess.run(
-        [
-            f"{cmd_prefix}gcc",
-            "-march=rv32im",
-            "-mabi=ilp32",
-            "-Ttext=000",
-            "--entry=main",
-            "-nostartfiles",
-            "-o",
-            f"{file}.o",
-            f"{file}.c",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-    subprocess.run(
-        [
-            f"{cmd_prefix}objcopy",
-            "-I",
-            "elf32-littleriscv",
-            "-O",
-            "ihex",
-            f"{file}.o",
-            f"{file}.hex",
-        ]
-    )
+def dump_to_hex(file, cmd_prefix, compile=False):
+    if compile:
+        base_path = "/".join(file.split("/")[:-1])
+        subprocess.run(
+            [
+                f"{cmd_prefix}-gcc",
+                "-g",
+                "-march=rv32im",
+                "-mabi=ilp32",
+                "-std=gnu99",
+                "-mabi=ilp32",
+                "-nostartfiles",
+                "-nostdinc",
+                "-nostdlib",
+                "-static",
+                "-o",
+                f"{file}.o",
+                f"{base_path}/crt.S",
+                f"{file}.c",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        subprocess.run(
+            [
+                f"{cmd_prefix}-objcopy",
+                "-I",
+                "elf32-littleriscv",
+                "-O",
+                "ihex",
+                f"{file}.o",
+                f"{file}.hex",
+            ]
+        )
+    else: # assumes .riscv files are in the folder
+        subprocess.run(
+            [
+                f"{cmd_prefix}-objcopy",
+                "-I",
+                "elf32-littleriscv",
+                "-O",
+                "ihex",
+                f"{file}.riscv",
+                f"{file}.hex",
+            ]
+        )
 
 
 def run_simulations(args):
@@ -50,11 +68,10 @@ def run_simulations(args):
         csvwriter = csv.writer(csvfile, delimiter=';')
         csvwriter.writerow(["file", "inst_count", "load_time", "exec_time", "total_time"])
         for file in tqdm(files):
-            if args.compile:
-                compile_to_hex(str(file)[:-2], args.executable_prefix)
+            dump_to_hex(str(file)[:-2], args.executable_prefix, compile=args.compile or args.spike)
             start = perf_counter()
-            _, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
-            risc_v = RISCVSimulator(0, mem_init)
+            start_addr, mem_init = program_load.read_file(f"{str(file)[:-2]}.hex")
+            risc_v = RISCVSimulator(start_addr, mem_init, disassembly=not args.spike)
             load = perf_counter() - start
             with open(f"{str(file)[:-2]}.log", "w") as f:
                 with redirect_stdout(f):
@@ -84,13 +101,20 @@ if __name__ == "__main__":
         "--executable-prefix",
         help="RISC-V executable prefix",
         type=str,
-        default="riscv32-unknown-elf-",
+        default="riscv32-unknown-elf",
     )
 
     parser.add_argument(
         "-c",
         "--compile",
         help="Compile C files and perform objcopy to get simulators' input file",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "-s",
+        "--spike",
+        help="Compile and generate log to compare with spike",
         action="store_true",
     )
 

@@ -10,13 +10,14 @@ from utils.convert import hex_to_bin, bin_to_int, hex_to_int
 class RISCVSimulator:
     extend_sign = ["8", "9", "A", "B", "C", "D", "E", "F"]
 
-    def __init__(self, pc, init_memory):
-        self.pc = pc
+    def __init__(self, pc, init_memory, disassembly=False):
+        self.pc = np.uint32(pc)
         self.next_pc = None
         self.memory = Memory(init_memory)
         self.register_file = RegisterFile()
         self.decoder = Decoder()
-        self.logger = Logger()
+        self.logger = Logger(disassembly=disassembly)
+        self.ebreak = False
 
     def run(self):
         inst_count = 0
@@ -46,7 +47,7 @@ class RISCVSimulator:
             self.logger.log()
             inst_count += 1
             self.pc = self.next_pc if self.next_pc != None else self.pc + 4
-            if self.pc == 0:
+            if self.ebreak:
                 break
             self.next_pc = None
         return inst_count
@@ -80,7 +81,7 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rd = self.register_file.registers[inst_fields["rd"]]
         rd.setVal(self.pc + 4)
-        self.next_pc = rs1.getVal() + inst_fields["imm"]
+        self.next_pc = np.uint32(rs1.getVal()) + inst_fields["imm"]
 
     def _BEQ(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
@@ -290,7 +291,7 @@ class RISCVSimulator:
         pass
 
     def _EBREAK(self, inst_fields):
-        pass
+        self.ebreak = True
 
     def _MUL(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
