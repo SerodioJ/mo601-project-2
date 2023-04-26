@@ -2,6 +2,7 @@ __pycache__/
 *.log
 *.hex
 *.o
+*.riscv
 *.i
 *.d
 !initial_debug.d
