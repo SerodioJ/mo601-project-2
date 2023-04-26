@@ -34,6 +34,20 @@ RUN git clone https://github.com/riscv/riscv-gnu-toolchain \
     && make \
     && rm -r /repos/*
 
+RUN apt-get update -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        device-tree-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/riscv-software-src/riscv-isa-sim.git \
+    && cd riscv-isa-sim \
+    && mkdir build \
+    && cd build \
+    && ../configure --prefix=/opt/riscv --with-isa=rv32im \
+    && make \
+    && make install \
+    && rm -r /repos/*
+
 ENV PATH $PATH:/opt/riscv/bin
 
 WORKDIR /opt
