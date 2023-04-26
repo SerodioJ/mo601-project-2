@@ -1,7 +1,5 @@
 def read_file(path):
     content = {}
-    curr_section = None
-    scope = None
     EOF = False
     base_addr = 0
     start_addr = 0
@@ -19,11 +17,11 @@ def read_file(path):
             elif r_type == "01":
                 EOF = True
             elif r_type == "02":
-                base_addr = int(line[8:12], 16) * 16
+                base_addr = int(line[9:13], 16) * 16
             elif r_type == "03":
-                start_addr = int(line[8:16], 16)
+                start_addr = int(line[9:13], 16) * 16 + int(line[13:17], 16)
             elif r_type == "04":
-                base_addr = int(line[8:12], 16) * 16
+                base_addr = int(line[9:13], 16) << 16
             elif r_type == "05":
-                start_addr = int(line[8:16], 16)
+                start_addr = int(line[9:17], 16)
     return start_addr, content
