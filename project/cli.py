@@ -22,7 +22,6 @@ def dump_to_hex(file, cmd_prefix, compile=False):
                 "-march=rv32im",
                 "-mabi=ilp32",
                 "-std=gnu99",
-                "-mabi=ilp32",
                 "-nostartfiles",
                 "-nostdinc",
                 "-nostdlib",
