@@ -65,7 +65,7 @@ def run_simulations(args):
         files = sorted(glob(args.path))
     with open("simulations.csv", "w") as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=';')
-        csvwriter.writerow(["file", "inst_count", "load_time", "exec_time", "total_time"])
+        csvwriter.writerow(["file", "inst_count", "load_time", "exec_time", "total_time", "inst/s"])
         for file in tqdm(files):
             dump_to_hex(str(file)[:-2], args.toolchain_prefix, compile=args.compile or args.spike)
             start = perf_counter()
@@ -76,7 +76,7 @@ def run_simulations(args):
                 with redirect_stdout(f):
                     inst_count = risc_v.run()
             total = perf_counter() - start
-            csvwriter.writerow([file, inst_count, load, total-load, total])
+            csvwriter.writerow([file, inst_count, load, total-load, total, inst_count/(total-load)])
     return
 
 

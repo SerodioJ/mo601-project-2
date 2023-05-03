@@ -68,7 +68,7 @@ class RISCVSimulator:
     def _LUI(self, inst_fields):
         rd = self.register_file.registers[inst_fields["rd"]]
         rd.setVal(inst_fields["imm"])
-        self.logger.set_inst_disassembly(f"{'LUI':>8} {self.logger.registers[inst_fields['rd']]},0x{inst_fields['imm'] >> 12:X}")
+        self.logger.set_inst_disassembly(f"{'LUI':>8} {self.logger.registers[inst_fields['rd']]},0x{np.uint32(inst_fields['imm']) >> 12:X}")
 
     def _AUIPC(self, inst_fields):
         rd = self.register_file.registers[inst_fields["rd"]]
@@ -86,7 +86,7 @@ class RISCVSimulator:
         rd = self.register_file.registers[inst_fields["rd"]]
         rd.setVal(self.pc + 4)
         self.next_pc = np.uint32(rs1.getVal()) + inst_fields["imm"]
-        self.logger.set_inst_disassembly(f"{'JALR':>8} {self.logger.registers[inst_fields['rd']]},{self.logger.registers[inst_fields['rs1']]},0x{self.next_pc:X}")
+        self.logger.set_inst_disassembly(f"{'JALR':>8} {self.logger.registers[inst_fields['rd']]},{self.logger.registers[inst_fields['rs1']]},{inst_fields['imm']}")
 
     def _BEQ(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
