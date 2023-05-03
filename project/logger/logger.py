@@ -67,25 +67,8 @@ class Logger:
     def set_inst(self, inst):
         self.inst["inst"] = inst
 
-    def set_inst_disassembly(self, inst_abi, inst_fields):
-        if self.disassembly:
-            self.inst["inst_abi"] = inst_abi
-            if inst_abi in self.disassembly_pattern[0]:
-                d_fields = f"{self.registers[inst_fields['rd']]},{self.registers[inst_fields['rs1']]},{inst_fields['rs2']}"
-            elif inst_abi in self.disassembly_pattern[1]:
-                d_fields = f"{self.registers[inst_fields['rd' if 'rd' in inst_fields else 'rs2']]},{inst_fields['imm']}({self.registers[inst_fields['rs1']]})"
-            elif len(inst_fields) == 2:
-                d_fields = f"{self.registers[inst_fields['rd']]},{inst_fields['imm']}"
-            elif "rs2" in inst_fields and "imm" in inst_fields:
-                d_fields = f"{self.registers[inst_fields['rs1']]},{self.registers[inst_fields['rs2']]},{inst_fields['imm']}"
-            elif "rd" in inst_fields and "imm" in inst_fields:
-                d_fields = f"{self.registers[inst_fields['rd']]},{self.registers[inst_fields['rs1']]},{inst_fields['imm']}"
-            else:
-                d_fields = f"{self.registers[inst_fields['rd']]},{self.registers[inst_fields['rs1']]},{self.registers[inst_fields['rs2']]}"
-            if inst_abi in ["ECALL", "EBREAK"]:
-                self.inst["disassembly"] = f"{inst_abi:<8}"
-            else:
-                self.inst["disassembly"] = f"{inst_abi:<8} {d_fields}"
+    def set_inst_disassembly(self, disassembly):
+            self.inst["disassembly"] = disassembly
 
     def set_reg(self, reg_cat, reg_id, reg_value):
         self.inst[reg_cat] = reg_id
