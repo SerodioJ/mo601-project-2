@@ -235,7 +235,7 @@ class RISCVSimulator:
         rs1 = self.register_file.registers[inst_fields["rs1"]]
         rd = self.register_file.registers[inst_fields["rd"]]
         rd.setVal(rs1.getVal() & inst_fields["imm"])
-        self.logger.set_inst_disassembly(f"{'AND':>8} {self.logger.registers[inst_fields['rd']]},{self.logger.registers[inst_fields['rs1']]},{inst_fields['imm']}")
+        self.logger.set_inst_disassembly(f"{'ANDI':>8} {self.logger.registers[inst_fields['rd']]},{self.logger.registers[inst_fields['rs1']]},{inst_fields['imm']}")
 
     def _SLLI(self, inst_fields):
         rs1 = self.register_file.registers[inst_fields["rs1"]]
